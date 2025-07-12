@@ -1,0 +1,104 @@
+import planetas.*
+import personas.*
+import construcciones.*
+
+describe "Productores y Constructores" {
+
+  test "trabajan constructores y productor en su planeta" {
+    var planeta = new Planeta(
+      habitantes = [],
+      construcciones = []
+    )
+
+    var consMontania = new Constructor(edad=40, region="montania", planetaDondeVive=planeta)
+    var consCosta = new Constructor(edad=35, region="costa", planetaDondeVive=planeta)
+    var consLlanura = new Constructor(edad=30, region="llanura", planetaDondeVive=planeta)
+
+    var productor = new Productor(edad=28, planetaDondeVive=planeta)
+    productor.aprenderTecnica("pesca")
+
+    planeta.sumarHabitantes([consMontania, consCosta, consLlanura, productor])
+
+    consMontania.trabajar(6, planeta) // Muralla de 3
+    consCosta.trabajar(4, planeta)    // Museo de 4 con nivel 1
+    consLlanura.trabajar(8, planeta)  // Muralla de 4
+    productor.trabajar(5, planeta)    // Gana 15 monedas
+
+    assert.equals(3, planeta.construcciones().size())
+    assert.that(productor.recurso() > 20)
+  }
+
+  test "productor y constructor destacado están en la delegación diplomática" {
+    var planeta = new Planeta(
+      habitantes = [],
+      construcciones = []
+    )
+    var c = new Construccion()
+    var consLlanura = new Constructor(edad=30, region="llanura", planetaDondeVive=planeta)
+    var productor = new Productor(edad=28, planetaDondeVive=planeta)
+
+    // Productor se vuelve destacada por técnicas
+    productor.aprenderTecnica("pesca")
+    productor.aprenderTecnica("huerta")
+    productor.aprenderTecnica("riego")
+    productor.aprenderTecnica("siembra")
+    productor.aprenderTecnica("hidroponia")
+    productor.aprenderTecnica("recoleccion") // Total 6 técnicas
+
+    // Constructor se vuelve destacada por construcciones realizadas
+    consLlanura.construir()
+    consLlanura.construir()
+    consLlanura.construir()
+    consLlanura.construir()
+    consLlanura.construir()
+    consLlanura.construir()
+
+    planeta.sumarHabitantes([productor, consLlanura])
+    planeta.delegacionDiplomatica()
+
+    assert.that(planeta.delegacionDiplomatica().contains(productor))
+    assert.that(planeta.delegacionDiplomatica().contains(consLlanura))
+  }
+
+test "delegación diplomática trabaja en su planeta" {
+  var planeta = new Planeta(
+    habitantes = [],
+    construcciones = []
+  )
+  
+
+  var productor = new Productor(edad=30, planetaDondeVive=planeta)
+  productor.aprenderTecnica("pesca")
+  productor.aprenderTecnica("huerta")
+  productor.aprenderTecnica("riego")
+  productor.aprenderTecnica("siembra")
+  productor.aprenderTecnica("recoleccion")
+  productor.aprenderTecnica("hidroponia") // ahora es destacada
+
+  var constructor = new Constructor(edad=40, region="montania", planetaDondeVive=planeta)
+  constructor.construir()
+  constructor.construir()
+  constructor.construir()
+  constructor.construir()
+  constructor.construir()
+  constructor.construir() // ahora es destacada
+
+  planeta.sumarHabitantes([productor, constructor])
+
+  var cantidadInicial = planeta.construcciones().size()
+
+  planeta.delegacionDiplomatica().forEach({habitante =>
+    if (habitante.className() == "Constructor") {
+      habitante.trabajar(4, planeta)
+    }
+  })
+
+  assert.equals(cantidadInicial + 1, planeta.construcciones().size())
+
+
+}
+
+
+
+
+}

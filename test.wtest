@@ -1,0 +1,53 @@
+import planetas.*
+import personas.*
+import construcciones.*
+
+describe "Tests del juego galáctico" {
+
+  var persona1 = new Persona(edad=17) // no destacada
+  var persona2 = new Persona(edad=25) // destacada
+  var persona3 = new Persona(edad=80) // no destacada por edad, gana monedas
+  var persona4 = new Persona(edad=20) // destacada
+
+  var muralla1 = new Muralla(longitud=6) // 60
+  var muralla2 = new Muralla(longitud=5) // 50
+  var museo1 = new Museo(superficie=5, indiceImportancia=2) // 10
+
+  var planeta1 = new Planeta(
+    habitantes = [persona1, persona2, persona3, persona4],
+    construcciones = [muralla1, muralla2, museo1]
+  )
+
+  test "delegación diplomática está formada por 3 personas" {
+    persona3.ganarMonedas(20) // ahora tiene 40 → destacada
+    assert.equals(3, planeta1.delegacionDiplomatica().size()) // persona2, persona3, persona4
+  }
+
+  test "planeta es valioso" {
+    assert.equals(true, planeta1.esValioso()) // total = 120
+  }
+
+  var persona5 = new Persona(edad=40) // destacada
+  var persona6 = new Persona(edad=10) // no destacada
+  var persona7 = new Persona(edad=16) // no destacada
+
+  var muralla3 = new Muralla(longitud=4) // 40
+  var museo2 = new Museo(superficie=3, indiceImportancia=1) // 3
+
+  var planeta2 = new Planeta(
+    habitantes = [persona5, persona6, persona7],
+    construcciones = [muralla3, museo2] // total = 43
+  )
+
+  test "planeta no es valioso" {
+    assert.equals(false, planeta2.esValioso())
+  }
+
+  test "delegación cambia cuando persona gana monedas" {
+    assert.equals(1, planeta2.delegacionDiplomatica().size()) // solo persona5
+    persona7.ganarMonedas(20) // queda con 40 → ahora es destacada
+    assert.equals(2, planeta2.delegacionDiplomatica().size()) // persona5 + persona7
+  }
+
+}
+
